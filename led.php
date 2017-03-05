@@ -42,6 +42,6 @@ if (isset($_GET['led'])&&$pw==$gpwd){
 			break;
 	}
 	//echo $script." ".$ip." ".$cmd;
-	echo exec($script." ".$ip." ".$cmd." 2>&1"); //remover <." 2>&1"> is you get errors in windows.
+	echo exec($script." ".$ip." ".$cmd." 2>&1"); //remove <." 2>&1"> is you get errors in windows.
 }
 ?>
