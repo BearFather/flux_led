@@ -1,8 +1,8 @@
 <?php
 	// Default IP
-$ip="192.168.1.101";
+$ip="192.168.1.107";
 	// Python script location
-$script="/scripts/flux_led.py";
+$script="/mnt/share/flux_led-master/flux_led.py";
 	// Set a password if you want some sort of security, leave blank for none.
 $pw="";
 	// Colors name (flux_led.py --listcolors )
@@ -25,23 +25,30 @@ if (isset($_GET['led'])&&$pw==$gpwd){
 		case ("warm"):
 			$level="100";
 			if (isset($_GET['level'])){$level=$_GET['level'];}
-			$cmd="-w ".$level;
+			$cmd="--on -w ".$level;
+			break;
+		case ("cycle"):
+			$info=exec($script." -i ".$ip);
+			preg_match('~\](.*?)\[~', $info, $state);
+			if (trim($state[1])=="ON"){$cmd="--off";}
+			else{$cmd="--on";}
 			break;
                 case ("jump"):
                 case ("gradual"):
                 case ("strobe"):
-			if (isset($_GET['color'])){
-		       		$color=$_GET['color'];
-				$speed="25";
+			if (isset($_GET['colors'])){
+		       		$color=$_GET['colors'];
+				$speed="80";
 	                	if (isset($_GET['speed'])){$speed=$_GET['speed'];}
-				$cmd="-C ".$led." ".$speed." \"".$color."\"";
+				$cmd="--on -C ".$led." ".$speed." \"".$color."\"";
 			}
                         break;
 		default:
-			if (in_array($led,$colors)){$cmd="-c ".$led;}
+			if (in_array($led,$colors)){$cmd=" --on -c ".$led;}
 			break;
 	}
-	//echo $script." ".$ip." ".$cmd;
-	echo exec($script." ".$ip." ".$cmd." 2>&1"); //remove <." 2>&1"> is you get errors in windows.
+	if(isset($_GET['debug'])){echo $script." ".$ip." ".$cmd."<BR>";}
+	exec($script." ".$ip." ".$cmd." 2>&1",$rtn);
+	foreach ($rtn as $line){echo $line."<br>";}
 }
 ?>
